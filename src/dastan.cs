@@ -11,8 +11,9 @@ namespace Dastan
 
     public Dastan(int R, int C, int NoOfPieces)
     {
-      Players.Add(new Player("Player One", 1));
-      Players.Add(new Player("Player Two", -1));
+      //Players.Add(new Player("Player One", 1));
+      //Players.Add(new Player("Player Two", -1));
+      CreateCustomPlayers();
       CreateMoveOptions();
       NoOfRows = R;
       NoOfColumns = C;
@@ -23,6 +24,32 @@ namespace Dastan
       CurrentPlayer = Players[0];
     }
 
+    // user input gives string?. We want them to give us a string.
+    private string giveMeAString(string prompt)
+    {
+    BEGIN:
+      Console.WriteLine(prompt);
+      var input = Console.ReadLine();
+      if (String.IsNullOrEmpty(input))
+      {
+        goto BEGIN;
+      }
+      else return input.ToString();
+    }
+
+    private void CreateCustomPlayers()
+    {
+      Players.Add(new Player(giveMeAString("Enter player one's name:"), 1));
+    P2:
+      string name2 = giveMeAString("Enter player two's name");
+      if (name2 == Players[0].GetName())
+      {
+        Console.WriteLine("Player two name must not be the same as player one.");
+        goto P2;
+      }
+      else Players.Add(new Player(name2, -1));
+    }
+    
     private void DisplayBoard()
     {
       Console.Write(Environment.NewLine + "   ");
