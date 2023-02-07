@@ -419,6 +419,14 @@ namespace Dastan
       return NewMoveOption;
     }
 
+    private MoveOption CreateFarisMoveOption(int Direction)
+    {
+      MoveOption NewMoveOption = new MoveOption("Faris".ToLower());
+      NewMoveOption.AddToPossibleMoves(new Move());
+
+      return NewMoveOption;
+    } 
+
     private MoveOption CreateMoveOption(string Name, int Direction)
     {
       if (Name == "chowkidar")
@@ -436,6 +444,10 @@ namespace Dastan
       else if (Name == "jazair")
       {
         return CreateJazairMoveOption(Direction);
+      }
+      else if (Name == "Faris".ToLower())
+      {
+        return CreateFarisMoveOption(Direction);
       }
       else
       {
