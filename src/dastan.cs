@@ -337,6 +337,7 @@ namespace Dastan
       MoveOptionOffer.Add("cuirassier");
       MoveOptionOffer.Add("ryott");
       MoveOptionOffer.Add("faujdar");
+      MoveOptionOffer.Add("faris");
     }
 
     private MoveOption CreateRyottMoveOption(int Direction)
@@ -422,10 +423,16 @@ namespace Dastan
     private MoveOption CreateFarisMoveOption(int Direction)
     {
       MoveOption NewMoveOption = new MoveOption("Faris".ToLower());
-      NewMoveOption.AddToPossibleMoves(new Move());
-
+      NewMoveOption.AddToPossibleMoves(new Move(2 * Direction, 1 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(2 * Direction, -1 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(-2 * Direction, 1 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(-2 * Direction, -1 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(1 * Direction, 2 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(1 * Direction, -2 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(-1 * Direction, 2 * Direction));
+      NewMoveOption.AddToPossibleMoves(new Move(-1 * Direction, -2 * Direction)); 
       return NewMoveOption;
-    } 
+    }
 
     private MoveOption CreateMoveOption(string Name, int Direction)
     {
@@ -458,11 +465,13 @@ namespace Dastan
     private void CreateMoveOptions()
     {
       Players[0].AddToMoveOptionQueue(CreateMoveOption("ryott", 1));
+      Players[0].AddToMoveOptionQueue(CreateMoveOption("faris", 1));
       Players[0].AddToMoveOptionQueue(CreateMoveOption("chowkidar", 1));
       Players[0].AddToMoveOptionQueue(CreateMoveOption("cuirassier", 1));
       Players[0].AddToMoveOptionQueue(CreateMoveOption("faujdar", 1));
       Players[0].AddToMoveOptionQueue(CreateMoveOption("jazair", 1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("ryott", -1));
+      Players[1].AddToMoveOptionQueue(CreateMoveOption("faris", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("chowkidar", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("jazair", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("faujdar", -1));
