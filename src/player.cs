@@ -5,12 +5,14 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
+    private bool WafrAwarded;
 
     public Player(string N, int D)
     {
       Score = 100;
       Name = N;
       Direction = D;
+      WafrAwarded = false;
     }
 
     public bool SameAs(Player APlayer)
@@ -73,6 +75,16 @@ namespace Dastan
     {
       MoveOption Temp = Queue.GetMoveOptionInPosition(Pos - 1);
       return Temp.CheckIfThereIsAMoveToSquare(StartSquareReference, FinishSquareReference);
+    }
+
+    public bool getWafrAwarded()
+    {
+      return WafrAwarded;
+    }
+
+    public void setWafrAwarded(bool b)
+    {
+      WafrAwarded = b;
     }
   }
 }

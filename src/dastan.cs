@@ -216,18 +216,39 @@ namespace Dastan
       {
         DisplayState();
         bool SquareIsValid = false;
-        int Choice;
-        do
+        bool hasBeenAwardedWafr = CurrentPlayer.getWafrAwarded();
+        bool gotWafr = AwardWafr();
+        bool wafrTurn = false;
+        if (gotWafr && !hasBeenAwardedWafr)
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
-          Choice = Convert.ToInt32(Console.ReadLine());
-          if (Choice == 9)
-          {
-            UseMoveOptionOffer();
-            DisplayState();
-          }
+          CurrentPlayer.setWafrAwarded(true);
+          wafrTurn = true;
         }
-        while (Choice < 1 || Choice > 3);
+        int Choice;
+        if (wafrTurn)
+        {
+          do
+          {
+            Console.WriteLine("You have been awarded a Wafr, you can select any move from your queue for free this turn.");
+            Console.Write("Choose move option to use from queue: ");
+            Choice = Convert.ToInt32(Console.ReadLine());
+          }
+          while (Choice < 1 || Choice > 5);
+        }
+        else
+        {
+          do
+          {
+            Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+            Choice = Convert.ToInt32(Console.ReadLine());
+            if (Choice == 9)
+            {
+              UseMoveOptionOffer();
+              DisplayState();
+            }
+          }
+          while (Choice < 1 || Choice > 3);
+        }
         int StartSquareReference = 0;
         while (!SquareIsValid)
         {
@@ -245,7 +266,10 @@ namespace Dastan
         if (MoveLegal)
         {
           int PointsForPieceCapture = CalculatePieceCapturePoints(FinishSquareReference);
-          CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+          if (!wafrTurn)
+          {
+            CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+          }
           CurrentPlayer.UpdateQueueAfterMove(Choice);
           UpdateBoard(StartSquareReference, FinishSquareReference);
           UpdatePlayerScore(PointsForPieceCapture);
@@ -455,6 +479,15 @@ namespace Dastan
       Players[1].AddToMoveOptionQueue(CreateMoveOption("jazair", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("faujdar", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("cuirassier", -1));
+    }
+
+    private bool AwardWafr()
+    {
+      if (new Random().Next(0, 3) == 0)
+      {
+        return true;
+      }
+      else return false;
     }
   }
 }
