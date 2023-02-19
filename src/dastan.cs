@@ -219,11 +219,24 @@ namespace Dastan
         int Choice;
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+          Console.Write("Choose move option to use from queue (1 to 3) or 8 to spy on your opponent or 9 to take the offer: ");
           Choice = Convert.ToInt32(Console.ReadLine());
           if (Choice == 9)
           {
             UseMoveOptionOffer();
+            DisplayState();
+          }
+          if (Choice == 8)
+          {
+            if (CurrentPlayer.SameAs(Players[0]))
+            {
+              Console.WriteLine("Opponent's queue: {0}", Players[1].GetJustQueueAsString());
+            }
+            else
+            {
+              Console.WriteLine("Opponent's queue: {0}", Players[0].GetJustQueueAsString());
+            }
+            CurrentPlayer.ChangeScore(-5);
             DisplayState();
           }
         }
