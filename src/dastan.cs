@@ -170,16 +170,44 @@ namespace Dastan
     private int GetSquareReference(string Description)
     {
       int SelectedSquare;
-      Console.Write("Enter the square " + Description + " (row number followed by column number): ");
-      SelectedSquare = Convert.ToInt32(Console.ReadLine());
-      return SelectedSquare;
+      SelectedSquare = GetValidInt("Enter the square " + Description + " (row number followed by column number): ");
+      if (!CheckSquareInBounds(SelectedSquare))
+      {
+        Console.WriteLine("Selected square out of bounds. Choose square with row 1-6 and column 1-6");
+        return GetSquareReference(Description);
+      }
+      else
+      {
+        return SelectedSquare;
+      }
+    }
+
+    private int GetValidInt(string userPrompt)
+    {
+      Console.WriteLine(userPrompt);
+      var userInput = Console.ReadLine();
+      int i;
+      if (!Int32.TryParse(userInput, out i))
+      {
+        Console.WriteLine("Enter a valid integer.");
+        return GetValidInt(userPrompt);
+      }
+      else
+      {
+        return i;
+      }
     }
 
     private void UseMoveOptionOffer()
     {
       int ReplaceChoice;
-      Console.Write("Choose the move option from your queue to replace (1 to 5): ");
-      ReplaceChoice = Convert.ToInt32(Console.ReadLine());
+    getchoice:
+      ReplaceChoice = GetValidInt("Choose the move option from your queue to replace (1 to 5): ");
+      if (ReplaceChoice < 1 || ReplaceChoice > 5)
+      {
+        Console.WriteLine("Enter an integer between 1 and 5.");
+        goto getchoice;
+      }
       CurrentPlayer.UpdateMoveOptionQueueWithOffer(ReplaceChoice - 1, CreateMoveOption(MoveOptionOffer[MoveOptionOfferPosition], CurrentPlayer.GetDirection()));
       CurrentPlayer.ChangeScore(-(10 - (ReplaceChoice * 2)));
       MoveOptionOfferPosition = RGen.Next(0, 5);
@@ -219,8 +247,7 @@ namespace Dastan
         int Choice;
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
-          Choice = Convert.ToInt32(Console.ReadLine());
+          Choice = GetValidInt("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
           if (Choice == 9)
           {
             UseMoveOptionOffer();
