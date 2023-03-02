@@ -5,6 +5,17 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
+    private int ChoiceOptionsLeft = 3;
+
+    public int GetChoiceOptionsLeft()
+    {
+      return ChoiceOptionsLeft;
+    }
+
+    public void DecreaseChoiceOptionsLeft()
+    {
+      ChoiceOptionsLeft -= 1;
+    }
 
     public Player(string N, int D)
     {

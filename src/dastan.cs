@@ -181,6 +181,8 @@ namespace Dastan
       Console.Write("Choose the move option from your queue to replace (1 to 5): ");
       ReplaceChoice = Convert.ToInt32(Console.ReadLine());
       CurrentPlayer.UpdateMoveOptionQueueWithOffer(ReplaceChoice - 1, CreateMoveOption(MoveOptionOffer[MoveOptionOfferPosition], CurrentPlayer.GetDirection()));
+      CurrentPlayer.DecreaseChoiceOptionsLeft();
+      Console.WriteLine("You have {0} choice options left", CurrentPlayer.GetChoiceOptionsLeft());
       CurrentPlayer.ChangeScore(-(10 - (ReplaceChoice * 2)));
       MoveOptionOfferPosition = RGen.Next(0, 5);
     }
@@ -219,13 +221,22 @@ namespace Dastan
         int Choice;
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
-          Choice = Convert.ToInt32(Console.ReadLine());
-          if (Choice == 9)
+          if (CurrentPlayer.GetChoiceOptionsLeft() > 0)
           {
-            UseMoveOptionOffer();
-            DisplayState();
+            Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+            Choice = Convert.ToInt32(Console.ReadLine());
+            if (Choice == 9)
+            {
+              UseMoveOptionOffer();
+              DisplayState();
+            }
           }
+          else
+          {
+            Console.Write("Choose move option to use from queue (1 to 3): ");
+            Choice = Convert.ToInt32(Console.ReadLine());
+          }
+
         }
         while (Choice < 1 || Choice > 3);
         int StartSquareReference = 0;
