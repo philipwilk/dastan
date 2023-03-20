@@ -23,6 +23,12 @@ namespace Dastan
       CurrentPlayer = Players[0];
     }
 
+    private bool AwardWafr()
+    {
+      return new Random().Next(0, 4) == 0;
+
+    }
+
     private void DisplayBoard()
     {
       Console.Write(Environment.NewLine + "   ");
@@ -216,10 +222,19 @@ namespace Dastan
       {
         DisplayState();
         bool SquareIsValid = false;
+        bool wasWafrAwarded = CurrentPlayer.getWafrAwarded();
+        bool WafrAwarded = AwardWafr();
+        int upper = 3;
         int Choice;
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+          if (!wasWafrAwarded && WafrAwarded)
+          {
+            Console.WriteLine("You have been awarded a Wafr, you can select any move from your queue for free this turn.");
+            upper = 5;
+            CurrentPlayer.setWafrAwarded(true);
+          }
+          Console.Write("Choose move option to use from queue (1 to {0}) or 9 to take the offer: ", upper);
           Choice = Convert.ToInt32(Console.ReadLine());
           if (Choice == 9)
           {
@@ -227,7 +242,7 @@ namespace Dastan
             DisplayState();
           }
         }
-        while (Choice < 1 || Choice > 3);
+        while (Choice < 1 || Choice > upper);
         int StartSquareReference = 0;
         while (!SquareIsValid)
         {
@@ -244,11 +259,15 @@ namespace Dastan
         bool MoveLegal = CurrentPlayer.CheckPlayerMove(Choice, StartSquareReference, FinishSquareReference);
         if (MoveLegal)
         {
-          int PointsForPieceCapture = CalculatePieceCapturePoints(FinishSquareReference);
-          CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+          if (upper != 5)
+          {
+            int PointsForPieceCapture = CalculatePieceCapturePoints(FinishSquareReference);
+            CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+            UpdatePlayerScore(PointsForPieceCapture);
+          }
+
           CurrentPlayer.UpdateQueueAfterMove(Choice);
           UpdateBoard(StartSquareReference, FinishSquareReference);
-          UpdatePlayerScore(PointsForPieceCapture);
           Console.WriteLine("New score: " + CurrentPlayer.GetScore() + Environment.NewLine);
         }
         if (CurrentPlayer.SameAs(Players[0]))

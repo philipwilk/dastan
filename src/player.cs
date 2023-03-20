@@ -5,12 +5,23 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
+    private bool WafrAwarded = false;
 
     public Player(string N, int D)
     {
       Score = 100;
       Name = N;
       Direction = D;
+    }
+
+    public bool getWafrAwarded()
+    {
+      return WafrAwarded;
+    }
+
+    public void setWafrAwarded(bool waffle)
+    {
+      WafrAwarded = waffle;
     }
 
     public bool SameAs(Player APlayer)
