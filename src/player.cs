@@ -74,5 +74,9 @@ namespace Dastan
       MoveOption Temp = Queue.GetMoveOptionInPosition(Pos - 1);
       return Temp.CheckIfThereIsAMoveToSquare(StartSquareReference, FinishSquareReference);
     }
+
+    public void ResetQueueBackAfterUndo(int position) {
+      Queue.ResetQueueBack(position);
+    }
   }
 }

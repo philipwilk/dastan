@@ -37,5 +37,10 @@ namespace Dastan
     {
       return Queue[Pos];
     }
+
+    public void ResetQueueBack(int pos)
+    {
+      Queue.Insert(0, Queue.Last());
+    }
   }
 }
