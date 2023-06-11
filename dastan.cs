@@ -1,5 +1,24 @@
+//Skeleton Program code for the AQA A Level Paper 1 Summer 2023 examination
+//this code should be used in conjunction with the Preliminary Material
+//written by the AQA Programmer Team
+//developed in the Visual Studio Community Edition programming environment
+
+using System;
+using System.Collections.Generic;
+
 namespace Dastan
 {
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      Dastan ThisGame = new Dastan(6, 6, 4);
+      ThisGame.PlayGame();
+      Console.WriteLine("Goodbye!");
+      Console.ReadLine();
+    }
+  }
+
   class Dastan
   {
     protected List<Square> Board;
@@ -455,6 +474,312 @@ namespace Dastan
       Players[1].AddToMoveOptionQueue(CreateMoveOption("jazair", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("faujdar", -1));
       Players[1].AddToMoveOptionQueue(CreateMoveOption("cuirassier", -1));
+    }
+  }
+
+  class Piece
+  {
+    protected string TypeOfPiece, Symbol;
+    protected int PointsIfCaptured;
+    protected Player BelongsTo;
+
+    public Piece(string T, Player B, int P, string S)
+    {
+      TypeOfPiece = T;
+      BelongsTo = B;
+      PointsIfCaptured = P;
+      Symbol = S;
+    }
+
+    public string GetSymbol()
+    {
+      return Symbol;
+    }
+
+    public string GetTypeOfPiece()
+    {
+      return TypeOfPiece;
+    }
+
+    public Player GetBelongsTo()
+    {
+      return BelongsTo;
+    }
+
+    public int GetPointsIfCaptured()
+    {
+      return PointsIfCaptured;
+    }
+  }
+
+  class Square
+  {
+    protected string Symbol;
+    protected Piece PieceInSquare;
+    protected Player BelongsTo;
+
+    public Square()
+    {
+      PieceInSquare = null;
+      BelongsTo = null;
+      Symbol = " ";
+    }
+
+    public virtual void SetPiece(Piece P)
+    {
+      PieceInSquare = P;
+    }
+
+    public virtual Piece RemovePiece()
+    {
+      Piece PieceToReturn = PieceInSquare;
+      PieceInSquare = null;
+      return PieceToReturn;
+    }
+
+    public virtual Piece GetPieceInSquare()
+    {
+      return PieceInSquare;
+    }
+
+    public virtual string GetSymbol()
+    {
+      return Symbol;
+    }
+
+    public virtual int GetPointsForOccupancy(Player CurrentPlayer)
+    {
+      return 0;
+    }
+
+    public virtual Player GetBelongsTo()
+    {
+      return BelongsTo;
+    }
+
+    public virtual bool ContainsKotla()
+    {
+      if (Symbol == "K" || Symbol == "k")
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
+
+  class Kotla : Square
+  {
+    public Kotla(Player P, string S) : base()
+    {
+      BelongsTo = P;
+      Symbol = S;
+    }
+
+    public override int GetPointsForOccupancy(Player CurrentPlayer)
+    {
+      if (PieceInSquare == null)
+      {
+        return 0;
+      }
+      else if (BelongsTo.SameAs(CurrentPlayer))
+      {
+        if (CurrentPlayer.SameAs(PieceInSquare.GetBelongsTo()) && (PieceInSquare.GetTypeOfPiece() == "piece" || PieceInSquare.GetTypeOfPiece() == "mirza"))
+        {
+          return 5;
+        }
+        else
+        {
+          return 0;
+        }
+      }
+      else
+      {
+        if (CurrentPlayer.SameAs(PieceInSquare.GetBelongsTo()) && (PieceInSquare.GetTypeOfPiece() == "piece" || PieceInSquare.GetTypeOfPiece() == "mirza"))
+        {
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
+      }
+    }
+  }
+
+  class MoveOption
+  {
+    protected string Name;
+    protected List<Move> PossibleMoves;
+
+    public MoveOption(string N)
+    {
+      Name = N;
+      PossibleMoves = new List<Move>();
+    }
+
+    public void AddToPossibleMoves(Move M)
+    {
+      PossibleMoves.Add(M);
+    }
+
+    public string GetName()
+    {
+      return Name;
+    }
+
+    public bool CheckIfThereIsAMoveToSquare(int StartSquareReference, int FinishSquareReference)
+    {
+      int StartRow = StartSquareReference / 10;
+      int StartColumn = StartSquareReference % 10;
+      int FinishRow = FinishSquareReference / 10;
+      int FinishColumn = FinishSquareReference % 10;
+      foreach (var M in PossibleMoves)
+      {
+        if (StartRow + M.GetRowChange() == FinishRow && StartColumn + M.GetColumnChange() == FinishColumn)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  class Move
+  {
+    protected int RowChange, ColumnChange;
+
+    public Move(int R, int C)
+    {
+      RowChange = R;
+      ColumnChange = C;
+    }
+
+    public int GetRowChange()
+    {
+      return RowChange;
+    }
+
+    public int GetColumnChange()
+    {
+      return ColumnChange;
+    }
+  }
+
+  class MoveOptionQueue
+  {
+    private List<MoveOption> Queue = new List<MoveOption>();
+
+    public string GetQueueAsString()
+    {
+      string QueueAsString = "";
+      int Count = 1;
+      foreach (var M in Queue)
+      {
+        QueueAsString += Count.ToString() + ". " + M.GetName() + "   ";
+        Count += 1;
+      }
+      return QueueAsString;
+    }
+
+    public void Add(MoveOption NewMoveOption)
+    {
+      Queue.Add(NewMoveOption);
+    }
+
+    public void Replace(int Position, MoveOption NewMoveOption)
+    {
+      Queue[Position] = NewMoveOption;
+    }
+
+    public void MoveItemToBack(int Position)
+    {
+      MoveOption Temp = Queue[Position];
+      Queue.RemoveAt(Position);
+      Queue.Add(Temp);
+    }
+
+    public MoveOption GetMoveOptionInPosition(int Pos)
+    {
+      return Queue[Pos];
+    }
+  }
+
+  class Player
+  {
+    private string Name;
+    private int Direction, Score;
+    private MoveOptionQueue Queue = new MoveOptionQueue();
+
+    public Player(string N, int D)
+    {
+      Score = 100;
+      Name = N;
+      Direction = D;
+    }
+
+    public bool SameAs(Player APlayer)
+    {
+      if (APlayer == null)
+      {
+        return false;
+      }
+      else if (APlayer.GetName() == Name)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    public string GetPlayerStateAsString()
+    {
+      return Name + Environment.NewLine + "Score: " + Score.ToString() + Environment.NewLine + "Move option queue: " + Queue.GetQueueAsString() + Environment.NewLine;
+    }
+
+    public void AddToMoveOptionQueue(MoveOption NewMoveOption)
+    {
+      Queue.Add(NewMoveOption);
+    }
+
+    public void UpdateQueueAfterMove(int Position)
+    {
+      Queue.MoveItemToBack(Position - 1);
+    }
+
+    public void UpdateMoveOptionQueueWithOffer(int Position, MoveOption NewMoveOption)
+    {
+      Queue.Replace(Position, NewMoveOption);
+    }
+
+    public int GetScore()
+    {
+      return Score;
+    }
+
+    public string GetName()
+    {
+      return Name;
+    }
+
+    public int GetDirection()
+    {
+      return Direction;
+    }
+
+    public void ChangeScore(int Amount)
+    {
+      Score += Amount;
+    }
+
+    public bool CheckPlayerMove(int Pos, int StartSquareReference, int FinishSquareReference)
+    {
+      MoveOption Temp = Queue.GetMoveOptionInPosition(Pos - 1);
+      return Temp.CheckIfThereIsAMoveToSquare(StartSquareReference, FinishSquareReference);
     }
   }
 }
