@@ -236,17 +236,24 @@ namespace Dastan
         DisplayState();
         bool SquareIsValid = false;
         int Choice;
+        int choiceUpperRange = 3;
+        if (!CurrentPlayer.getWafrAwarded() && AwardWafr())
+        {
+          choiceUpperRange = 5;
+          Console.WriteLine("You have been awarded a wafr, you may use any move from your queue for free this turn.");
+          CurrentPlayer.setWafrAwarded(true);
+        }
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+          Console.Write("Choose move option to use from queue (1 to {0}", choiceUpperRange == 5 ? "5): " : "3) or 9 to take the offer: ");
           Choice = Convert.ToInt32(Console.ReadLine());
-          if (Choice == 9)
+          if (Choice == 9 && choiceUpperRange != 5)
           {
             UseMoveOptionOffer();
             DisplayState();
           }
         }
-        while (Choice < 1 || Choice > 3);
+        while (Choice < 1 || Choice > choiceUpperRange);
         int StartSquareReference = 0;
         while (!SquareIsValid)
         {
@@ -264,7 +271,10 @@ namespace Dastan
         if (MoveLegal)
         {
           int PointsForPieceCapture = CalculatePieceCapturePoints(FinishSquareReference);
-          CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+          if (choiceUpperRange != 5)
+          {
+            CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
+          }
           CurrentPlayer.UpdateQueueAfterMove(Choice);
           UpdateBoard(StartSquareReference, FinishSquareReference);
           UpdatePlayerScore(PointsForPieceCapture);
@@ -282,6 +292,11 @@ namespace Dastan
       }
       DisplayState();
       DisplayFinalResult();
+    }
+
+    private bool AwardWafr()
+    {
+      return new Random().Next(0, 4) == 0;
     }
 
     private void UpdateBoard(int StartSquareReference, int FinishSquareReference)
@@ -712,12 +727,22 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
-
+    private bool WafrAwarded = false;
     public Player(string N, int D)
     {
       Score = 100;
       Name = N;
       Direction = D;
+    }
+
+    public bool getWafrAwarded()
+    {
+      return WafrAwarded;
+    }
+
+    public void setWafrAwarded(bool state)
+    {
+      WafrAwarded = state;
     }
 
     public bool SameAs(Player APlayer)
