@@ -30,8 +30,7 @@ namespace Dastan
 
     public Dastan(int R, int C, int NoOfPieces)
     {
-      Players.Add(new Player("Player One", 1));
-      Players.Add(new Player("Player Two", -1));
+      CreateCustomPlayers();
       CreateMoveOptions();
       NoOfRows = R;
       NoOfColumns = C;
@@ -40,6 +39,22 @@ namespace Dastan
       CreateBoard();
       CreatePieces(NoOfPieces);
       CurrentPlayer = Players[0];
+    }
+
+    private void CreateCustomPlayers()
+    {
+      Console.WriteLine("Enter name of player one:");
+      Players.Add(new Player(Console.ReadLine()!, 1));
+      do
+      {
+        Console.WriteLine("Enter name of player two:");
+        string playerTwoBuff = Console.ReadLine()!;
+        if (playerTwoBuff.ToLower() == Players[0].GetName().ToLower())
+        {
+          Console.WriteLine("Two players cannot have the same name!");
+        }
+        else { Players.Add(new Player(playerTwoBuff, -1)); break; };
+      } while (true);
     }
 
     private void DisplayBoard()
