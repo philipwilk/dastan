@@ -238,11 +238,13 @@ namespace Dastan
         int Choice;
         do
         {
-          Console.Write("Choose move option to use from queue (1 to 3) or 9 to take the offer: ");
+          Console.Write("Choose move option to use from queue (1 to 3){0}", CurrentPlayer.GetChoiceOptionsLeft() > 0 ? " or 9 to take the offer: " : ":");
           Choice = Convert.ToInt32(Console.ReadLine());
-          if (Choice == 9)
+          if (Choice == 9 && CurrentPlayer.GetChoiceOptionsLeft() > 0)
           {
+            CurrentPlayer.DecreaseChoiceOptionsLeft();
             UseMoveOptionOffer();
+            Console.WriteLine("You have {0} offer choices left", CurrentPlayer.GetChoiceOptionsLeft());
             DisplayState();
           }
         }
@@ -712,12 +714,23 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
+    private int ChoiceOptionsLeft = 3;
 
     public Player(string N, int D)
     {
       Score = 100;
       Name = N;
       Direction = D;
+    }
+
+    public int GetChoiceOptionsLeft()
+    {
+      return ChoiceOptionsLeft;
+    }
+
+    public void DecreaseChoiceOptionsLeft()
+    {
+      ChoiceOptionsLeft--;
     }
 
     public bool SameAs(Player APlayer)
