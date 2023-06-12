@@ -22,6 +22,7 @@ namespace Dastan
   class Dastan
   {
     protected List<Square> Board;
+    protected List<Square> PreviousBoard;
     protected int NoOfRows, NoOfColumns, MoveOptionOfferPosition;
     protected List<Player> Players = new List<Player>();
     protected List<string> MoveOptionOffer = new List<string>();
@@ -233,6 +234,7 @@ namespace Dastan
       bool GameOver = false;
       while (!GameOver)
       {
+      Move:
         DisplayState();
         bool SquareIsValid = false;
         int Choice;
@@ -263,12 +265,25 @@ namespace Dastan
         bool MoveLegal = CurrentPlayer.CheckPlayerMove(Choice, StartSquareReference, FinishSquareReference);
         if (MoveLegal)
         {
+          PreviousBoard = Board;
+          CurrentPlayer.PreviousScore = CurrentPlayer.GetScore();
           int PointsForPieceCapture = CalculatePieceCapturePoints(FinishSquareReference);
           CurrentPlayer.ChangeScore(-(Choice + (2 * (Choice - 1))));
           CurrentPlayer.UpdateQueueAfterMove(Choice);
           UpdateBoard(StartSquareReference, FinishSquareReference);
           UpdatePlayerScore(PointsForPieceCapture);
           Console.WriteLine("New score: " + CurrentPlayer.GetScore() + Environment.NewLine);
+        }
+        DisplayState();
+        Console.WriteLine("Undo previous move? Y/N");
+        string revert = Console.ReadLine()!;
+        if (revert.ToLower() == "y")
+        {
+          int change = CurrentPlayer.PreviousScore - CurrentPlayer.GetScore() - 5;
+          CurrentPlayer.ChangeScore(change);
+          Board = PreviousBoard;
+          CurrentPlayer.ResetQueueBackAfterUndo(Choice);
+          goto Move;
         }
         if (CurrentPlayer.SameAs(Players[0]))
         {
@@ -684,6 +699,14 @@ namespace Dastan
       return QueueAsString;
     }
 
+    public void ResetQueueBack(int position)
+    {
+      for (int i = 0; i < Queue.Count - (position - 1); i++)
+      {
+        MoveItemToBack(position - 1);
+      }
+    }
+
     public void Add(MoveOption NewMoveOption)
     {
       Queue.Add(NewMoveOption);
@@ -712,12 +735,18 @@ namespace Dastan
     private string Name;
     private int Direction, Score;
     private MoveOptionQueue Queue = new MoveOptionQueue();
+    public int PreviousScore { get; set; }
 
     public Player(string N, int D)
     {
       Score = 100;
       Name = N;
       Direction = D;
+    }
+
+    public void ResetQueueBackAfterUndo(int position)
+    {
+      Queue.ResetQueueBack(position);
     }
 
     public bool SameAs(Player APlayer)
